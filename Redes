@@ -1,0 +1,37 @@
+# Topologia em Estrela - Show da Banda do Miguel 🎸
+
+## 📖 Descrição
+Este projeto simula uma rede local em topologia estrela, criada para a equipe de produção do show da banda de Miguel. Utilizamos o Cisco Packet Tracer para modelar e testar a comunicação entre os membros da equipe, garantindo que todos possam se comunicar com eficiência durante o evento.
+
+---
+
+## 🌐 Topologia da Rede
+- 1 switch central (modelo Cisco 2960)
+- 4 computadores representando os membros da equipe:
+  - Som
+  - Iluminação
+  - Produção Geral
+  - Técnico de Palco
+
+A rede foi montada em **topologia estrela**, com todos os PCs conectados diretamente ao switch.
+
+---
+
+## ⚙️ Configuração de IPs
+
+| Dispositivo    | IP              | Máscara de Sub-rede     |
+|----------------|-----------------|--------------------------|
+| PC_Som         | 192.168.10.2    | 255.255.255.0            |
+| PC_Iluminacao  | 192.168.10.3    | 255.255.255.0            |
+| PC_Producao    | 192.168.10.4    | 255.255.255.0            |
+| PC_TPalco      | 192.168.10.5    | 255.255.255.0            |
+
+---
+
+## ✅ Teste de Comunicação
+
+Utilizamos o comando `ping` para verificar se os dispositivos conseguem se comunicar entre si.
+
+### Exemplo:
+```bash
+ping 192.168.10.3
