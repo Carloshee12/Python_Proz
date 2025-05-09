@@ -1,0 +1,95 @@
+#!/bin/bash
+# Script completo de configuração EC2 para a Banda de Miguel
+# Autor: [Seu Nome]
+# Data: $(date +%Y-%m-%d)
+
+#######################################
+# 1. Configuração Inicial (executar no console AWS)
+#######################################
+
+echo "1. Configure no Console AWS:"
+echo "- Navegue até EC2 > Launch Instance"
+echo "- Selecione 'Amazon Linux 2 AMI'"
+echo "- Escolha tipo t2.micro (Free Tier)"
+echo "- Crie novo par de chaves (salve o .pem)"
+echo "- Configure Security Group para permitir SSH apenas do seu IP"
+echo "- Launch Instance"
+
+read -p "Pressione ENTER quando a instância estiver rodando..."
+
+#######################################
+# 2. Conexão SSH
+#######################################
+
+KEY_FILE="BandaMiguel-key.pem"
+INSTANCE_IP="SEU_IP_PUBLICO_AQUI"
+
+echo -e "\n2. Conectando via SSH..."
+chmod 400 $KEY_FILE
+ssh -i "$KEY_FILE" ec2-user@$INSTANCE_IP << 'EOF'
+
+#######################################
+# 3. Gerenciamento de Armazenamento (executar na instância)
+#######################################
+
+echo -e "\n3. Verificando discos disponíveis..."
+lsblk
+
+echo -e "\nCriando diretório de montagem..."
+sudo mkdir -p /mnt/banda-docs
+
+#######################################
+# 4. Formatação e Montagem (executar após criar e anexar volume EBS)
+#######################################
+
+echo -e "\n4. Formatando novo volume..."
+sudo mkfs -t ext4 /dev/xvdf
+
+echo -e "\nMontando volume..."
+sudo mount /dev/xvdf /mnt/banda-docs
+
+echo -e "\nConfigurando montagem automática..."
+echo "/dev/xvdf /mnt/banda-docs ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+
+#######################################
+# 5. Criação de Arquivos
+#######################################
+
+echo -e "\n5. Criando arquivos de documentação..."
+sudo bash -c 'cat > /mnt/banda-docs/documentos_banda.txt <<EOL
+Documentos importantes da Banda de Miguel
+- Repertório
+- Contratos
+- Letras de músicas
+- Agenda de shows
+- Contatos importantes
+EOL'
+
+#######################################
+# 6. Verificação Final
+#######################################
+
+echo -e "\n6. Verificando configuração..."
+echo -e "\nConteúdo do diretório:"
+ls -lh /mnt/banda-docs/
+
+echo -e "\nEspaço disponível:"
+df -h /mnt/banda-docs
+
+echo -e "\nMontagens ativas:"
+mount | grep banda-docs
+
+echo -e "\nConteúdo do arquivo:"
+cat /mnt/banda-docs/documentos_banda.txt
+
+echo -e "\nConfiguração completa! Lembre-se de:"
+echo "1. Tirar print da última saída"
+echo "2. Parar a instância quando não estiver em uso"
+echo "3. Configurar backups periódicos"
+
+EOF
+
+echo -e "\nProcesso concluído! Não esqueça de:"
+echo "1. Encerrar a instância no console AWS"
+echo "2. Criar snapshots do volume EBS"
+echo "3. Monitorar custos na conta AWS"
